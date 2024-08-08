@@ -61,7 +61,7 @@ const GeneratePDF = ({ invoice }) => {
                 <tr>
                   <td>${item.quantity}</td>
                   <td>${item.description}</td>
-                  <td>${item.unitPrice} €</td>
+                  <td>${item.unitPrice} F CFA</td>
                   <td>${item.quantity * item.unitPrice} €</td>
                 </tr>
               `).join('')}
@@ -74,7 +74,7 @@ const GeneratePDF = ({ invoice }) => {
             <strong>TVA à 20%:</strong> ${(invoice.total * 0.2).toFixed(2)} €
           </div>
           <div>
-            <strong>Total TTC en euros:</strong> ${(invoice.total * 1.2).toFixed(2)} €
+            <strong>Total TTC en Francs CFA:</strong> ${(invoice.total * 1.2).toFixed(2)} €
           </div>
           <div class="footer">
             En votre aimable règlement, Cordialement.

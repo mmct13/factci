@@ -13,7 +13,7 @@ import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import AntDesign from "@expo/vector-icons/AntDesign";
-// Couleurs de l'interface
+
 const colors = {
   primary: "#2A3B47",
   secondary: "#BDC3C7",
@@ -27,27 +27,119 @@ const colors = {
   darkBackground: "#1C2833",
 };
 
+// Étape 1 : Informations sur l'entreprise
 const RegisterStep1 = ({
   nextStep,
-  nom,
-  setNom,
-  prenom,
-  setPrenom,
-  commune,
-  setCommune,
   enterpriseName,
   setEnterpriseName,
+  commune,
+  setCommune,
+  telephone,
+  setTelephone,
+  siteweb,
+  setSiteweb,
   errors,
   setErrors,
 }) => {
   const validateStep1 = () => {
     let errors = {};
-    if (!nom) errors.nom = "Nom est requis.";
-    if (!prenom) errors.prenom = "Prénoms sont requis.";
     if (!enterpriseName)
       errors.enterpriseName = "Nom de l'entreprise est requis.";
-
     if (!commune) errors.commune = "Le nom de la commune est requis.";
+    if (!telephone) errors.telephone = "Téléphone est requis.";
+
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+    } else {
+      nextStep();
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Nom de l'entreprise"
+        value={enterpriseName}
+        onChangeText={(text) => {
+          setEnterpriseName(text);
+          setErrors((prev) => ({ ...prev, enterpriseName: "" }));
+        }}
+      />
+      {errors.enterpriseName && (
+        <Text style={styles.errorText}>{errors.enterpriseName}</Text>
+      )}
+      <TextInput
+        style={styles.input}
+        placeholder="Ville, Commune de l'entreprise"
+        value={commune}
+        onChangeText={(text) => {
+          setCommune(text);
+          setErrors((prev) => ({ ...prev, commune: "" }));
+        }}
+      />
+      {errors.commune && <Text style={styles.errorText}>{errors.commune}</Text>}
+      <TextInput
+        style={styles.input}
+        placeholder="Téléphone de l'entreprise"
+        value={telephone}
+        onChangeText={(text) => {
+          setTelephone(text);
+          setErrors((prev) => ({ ...prev, telephone: "" }));
+        }}
+        keyboardType="numeric"
+      />
+      {errors.telephone && (
+        <Text style={styles.errorText}>{errors.telephone}</Text>
+      )}
+      <TextInput
+        style={styles.input}
+        placeholder="Site Internet"
+        value={siteweb}
+        onChangeText={(text) => {
+          setSiteweb(text);
+        }}
+      />
+      <View style={styles.btnContainer}>
+        <TouchableOpacity style={styles.button} onPress={validateStep1}>
+          <Text style={styles.buttonText}>
+            <AntDesign name="right" size={20} color="white" />
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+// Étape 2 : Informations sur l'utilisateur
+const RegisterStep2 = ({
+  nextStep,
+  previousStep,
+  nom,
+  setNom,
+  prenom,
+  setPrenom,
+  email,
+  setEmail,
+  password,
+  setPassword,
+  confirmPassword,
+  setConfirmPassword,
+  errors,
+  setErrors,
+}) => {
+  const validateStep2 = () => {
+    let errors = {};
+    if (!nom) errors.nom = "Nom est requis.";
+    if (!prenom) errors.prenom = "Prénoms sont requis.";
+    if (!email) errors.email = "Adresse mail est requise.";
+    if (!password) errors.password = "Mot de passe est requis.";
+    if (!confirmPassword)
+      errors.confirmPassword = "Confirmation du mot de passe est requise.";
+    if (password !== confirmPassword)
+      errors.confirmPassword = "Les mots de passe ne correspondent pas.";
+    if (password.length < 8)
+      errors.password = "Le mot de passe doit contenir au moins 8 caractères.";
 
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
@@ -80,119 +172,16 @@ const RegisterStep1 = ({
       {errors.prenom && <Text style={styles.errorText}>{errors.prenom}</Text>}
       <TextInput
         style={styles.input}
-        placeholder="Nom de l'entreprise"
-        value={enterpriseName}
-        onChangeText={(text) => {
-          setEnterpriseName(text);
-          setErrors((prev) => ({ ...prev, enterpriseName: "" }));
-        }}
-      />
-      {errors.enterpriseName && (
-        <Text style={styles.errorText}>{errors.enterpriseName}</Text>
-      )}
-
-      <TextInput
-        style={styles.input}
-        placeholder="Commune"
-        value={commune}
-        onChangeText={(text) => {
-          setCommune(text);
-          setErrors((prev) => ({ ...prev, commune: "" }));
-        }}
-      />
-      {errors.commune && <Text style={styles.errorText}>{errors.commune}</Text>}
-      <View style={styles.btnContainer}>
-        <TouchableOpacity style={styles.button} onPress={validateStep1}>
-          <Text style={styles.buttonText}>
-            <AntDesign name="right" size={30} color="white" />
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-const RegisterStep2 = ({
-  previousStep,
-  handleRegister,
-  adresse,
-  setAdresse,
-  telephone,
-  setTelephone,
-  email,
-  setEmail,
-  siteweb,
-  setSiteweb,
-  password,
-  setPassword,
-  confirmPassword,
-  setConfirmPassword,
-  loading,
-  errors,
-  setErrors,
-}) => {
-  const validateStep2 = () => {
-    let errors = {};
-    if (!adresse) errors.adresse = "Adresse est requise.";
-    if (!telephone) errors.telephone = "Téléphone est requis.";
-    if (!email) errors.email = "Adresse mail est requise.";
-    if (!password) errors.password = "Mot de passe est requis.";
-    if (!confirmPassword)
-      errors.confirmPassword = "Confirmation du mot de passe est requise.";
-    if (password !== confirmPassword)
-      errors.confirmPassword = "Les mots de passe ne correspondent pas.";
-    if (password.length < 8)
-      errors.password = "Le mot de passe doit contenir au moins 8 caractères.";
-
-    if (Object.keys(errors).length > 0) {
-      setErrors(errors);
-    } else {
-      handleRegister();
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Adresse de l'entreprise"
-        value={adresse}
-        onChangeText={(text) => {
-          setAdresse(text);
-          setErrors((prev) => ({ ...prev, adresse: "" }));
-        }}
-      />
-      {errors.adresse && <Text style={styles.errorText}>{errors.adresse}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Téléphone de l'entreprise"
-        value={telephone}
-        onChangeText={(text) => {
-          setTelephone(text);
-          setErrors((prev) => ({ ...prev, telephone: "" }));
-        }}
-        keyboardType="numeric"
-      />
-      {errors.telephone && (
-        <Text style={styles.errorText}>{errors.telephone}</Text>
-      )}
-      <TextInput
-        style={styles.input}
         placeholder="Adresse mail"
         value={email}
+        keyboardType="email-address"
+        autoCapitalize="none"
         onChangeText={(text) => {
           setEmail(text);
           setErrors((prev) => ({ ...prev, email: "" }));
         }}
       />
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-      <TextInput
-        style={styles.input}
-        placeholder="Site Internet"
-        value={siteweb}
-        onChangeText={(text) => {
-          setSiteweb(text);
-        }}
-      />
       <TextInput
         style={styles.input}
         placeholder="Mot de passe"
@@ -202,6 +191,7 @@ const RegisterStep2 = ({
           setErrors((prev) => ({ ...prev, password: "" }));
         }}
         secureTextEntry
+        autoCapitalize="none"
       />
       {errors.password && (
         <Text style={styles.errorText}>{errors.password}</Text>
@@ -215,6 +205,7 @@ const RegisterStep2 = ({
           setErrors((prev) => ({ ...prev, confirmPassword: "" }));
         }}
         secureTextEntry
+        autoCapitalize="none"
       />
       {errors.confirmPassword && (
         <Text style={styles.errorText}>{errors.confirmPassword}</Text>
@@ -222,19 +213,102 @@ const RegisterStep2 = ({
       <View style={styles.btnContainer}>
         <TouchableOpacity style={styles.button} onPress={previousStep}>
           <Text style={styles.buttonText}>
-            <AntDesign name="left" size={30} color="white" />
+            <AntDesign name="left" size={20} color="white" />
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={validateStep2}>
+          <Text style={styles.buttonText}>
+            <AntDesign name="right" size={20} color="white" />
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+// Étape 3 : Informations complémentaires
+const RegisterStep3 = ({
+  previousStep,
+  handleRegister,
+  secteurActivite,
+  setSecteurActivite,
+  nombreEmployes,
+  setNombreEmployes,
+  role,
+  setRole,
+  loading,
+  errors,
+  setErrors,
+}) => {
+  const validateStep3 = () => {
+    let errors = {};
+    if (!secteurActivite)
+      errors.secteurActivite = "Secteur d'activité est requis.";
+    if (!nombreEmployes)
+      errors.nombreEmployes = "Nombre d'employés est requis.";
+    if (!role) errors.role = "Rôle de l'utilisateur est requis.";
+
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+    } else {
+      handleRegister();
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Secteur d'activité"
+        value={secteurActivite}
+        onChangeText={(text) => {
+          setSecteurActivite(text);
+          setErrors((prev) => ({ ...prev, secteurActivite: "" }));
+        }}
+      />
+      {errors.secteurActivite && (
+        <Text style={styles.errorText}>{errors.secteurActivite}</Text>
+      )}
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre d'employés"
+        value={nombreEmployes}
+        onChangeText={(text) => {
+          setNombreEmployes(text);
+          setErrors((prev) => ({ ...prev, nombreEmployes: "" }));
+        }}
+        keyboardType="numeric"
+      />
+      {errors.nombreEmployes && (
+        <Text style={styles.errorText}>{errors.nombreEmployes}</Text>
+      )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Rôle de l'utilisateur"
+        value={role}
+        onChangeText={(text) => {
+          setRole(text);
+          setErrors((prev) => ({ ...prev, role: "" }));
+        }}
+      />
+      {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
+      <View style={styles.btnContainer}>
+        <TouchableOpacity style={styles.button} onPress={previousStep}>
+          <Text style={styles.buttonText}>
+            <AntDesign name="left" size={20} color="white" />
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.button}
-          onPress={validateStep2}
+          onPress={validateStep3}
           disabled={loading}
         >
           {loading ? (
             <ActivityIndicator color="white" />
           ) : (
             <Text style={styles.buttonText}>
-              <AntDesign name="check" size={30} color="white" />
+              <AntDesign name="check" size={20} color="white" />
             </Text>
           )}
         </TouchableOpacity>
@@ -250,31 +324,19 @@ const RegisterScreen = () => {
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [enterpriseName, setEnterpriseName] = useState("");
-  const [adresse, setAdresse] = useState("");
   const [commune, setCommune] = useState("");
   const [siteweb, setSiteweb] = useState("");
   const [telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [secteurActivite, setSecteurActivite] = useState("");
+  const [nombreEmployes, setNombreEmployes] = useState("");
+  const [role, setRole] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      setErrors((prev) => ({
-        ...prev,
-        confirmPassword: "Les mots de passe ne correspondent pas.",
-      }));
-      return;
-    } else if (password.length < 8) {
-      setErrors((prev) => ({
-        ...prev,
-        password: "Le mot de passe doit contenir au moins 8 caractères.",
-      }));
-      return;
-    }
-
     setLoading(true);
     setErrors({}); // Réinitialiser les erreurs avant l'envoi
 
@@ -292,14 +354,16 @@ const RegisterScreen = () => {
         nom,
         prenom,
         enterpriseName,
-        adresse,
+        commune,
         telephone,
         email,
-        commune,
         siteweb,
+        secteurActivite,
+        nombreEmployes,
+        role,
       });
       setLoading(false);
-      navigation.navigate("Login");
+      navigation.replace("Home");
     } catch (error) {
       setLoading(false);
       alert(error.message);
@@ -312,33 +376,45 @@ const RegisterScreen = () => {
         {step === 1 ? (
           <RegisterStep1
             nextStep={() => setStep(2)}
-            nom={nom}
-            setNom={setNom}
-            prenom={prenom}
-            setPrenom={setPrenom}
             enterpriseName={enterpriseName}
             setEnterpriseName={setEnterpriseName}
             commune={commune}
             setCommune={setCommune}
+            
+            telephone={telephone}
+            setTelephone={setTelephone}
+            siteweb={siteweb}
+            setSiteweb={setSiteweb}
             errors={errors}
             setErrors={setErrors}
           />
-        ) : (
+        ) : step === 2 ? (
           <RegisterStep2
+            nextStep={() => setStep(3)}
             previousStep={() => setStep(1)}
-            handleRegister={handleRegister}
-            adresse={adresse}
-            setAdresse={setAdresse}
-            telephone={telephone}
-            setTelephone={setTelephone}
+            nom={nom}
+            setNom={setNom}
+            prenom={prenom}
+            setPrenom={setPrenom}
             email={email}
             setEmail={setEmail}
-            siteweb={siteweb}
-            setSiteweb={setSiteweb}
             password={password}
             setPassword={setPassword}
             confirmPassword={confirmPassword}
             setConfirmPassword={setConfirmPassword}
+            errors={errors}
+            setErrors={setErrors}
+          />
+        ) : (
+          <RegisterStep3
+            previousStep={() => setStep(2)}
+            handleRegister={handleRegister}
+            secteurActivite={secteurActivite}
+            setSecteurActivite={setSecteurActivite}
+            nombreEmployes={nombreEmployes}
+            setNombreEmployes={setNombreEmployes}
+            role={role}
+            setRole={setRole}
             loading={loading}
             errors={errors}
             setErrors={setErrors}
@@ -358,7 +434,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
-    padding: 20,
+    padding: 10,
     justifyContent: "center",
   },
   title: {
@@ -370,9 +446,8 @@ const styles = StyleSheet.create({
   input: {
     borderBottomWidth: 1,
     borderColor: colors.accent,
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    padding: 5,
+    marginBottom: 8,
     color: colors.text,
   },
   button: {
@@ -381,9 +456,9 @@ const styles = StyleSheet.create({
     borderRadius: 50, // Assurez-vous que c'est la moitié de la taille du bouton
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 10,
-    width: 60, // Ajustez la largeur pour que le bouton soit circulaire
-    height: 60, // Assurez-vous que la hauteur est égale à la largeur
+    marginBottom: 5,
+    width: 50, // Ajustez la largeur pour que le bouton soit circulaire
+    height: 50, // Assurez-vous que la hauteur est égale à la largeur
   },
   buttonText: {
     color: colors.darkBackground,
@@ -395,12 +470,11 @@ const styles = StyleSheet.create({
     gap: 45,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 30,
+    marginTop: 10,
   },
   errorText: {
     color: colors.error,
-    fontSize: 12,
-    marginBottom: 10,
+    fontSize: 8,
   },
   linkContainer: {
     marginTop: 20,
@@ -408,8 +482,8 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.primary,
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "light",
   },
 });
 

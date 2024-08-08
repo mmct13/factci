@@ -99,7 +99,7 @@ const LoginScreen = () => {
               <ActivityIndicator color="white" />
             ) : (
               <Text style={styles.buttonText}>
-                <AntDesign name="login" size={30} color="white" />
+                <AntDesign name="login" size={20} color="white" />
               </Text>
             )}
           </TouchableOpacity>
@@ -135,9 +135,8 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 20,
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
   },
   buttonText: {
     color: colors.darkBackground,
@@ -154,8 +153,8 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.primary,
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 12,
+    fontWeight: "light",
   },
   btnContainer: {
     flexDirection: "row",
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     gap: 45,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 5,
   },
 });
 
