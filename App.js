@@ -11,6 +11,9 @@ import { StatusBar } from "expo-status-bar";
 import logo from "./assets/logo.png";
 import { Alert, Image, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import InvoiceForm from "./src/Components/InvoiceForm";
+import InvoiceList from "./src/Components/InvoiceList";
+
 // Couleurs de l'interface
 const colors = {
   primary: "#2A3B47",
@@ -61,7 +64,7 @@ export default function App() {
         },
       ],
       { cancelable: false }
-    )
+    );
   };
 
   return (
@@ -81,76 +84,138 @@ export default function App() {
           }}
         >
           {user ? (
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                title: "",
-                headerLeft: () => (
-                  <View
-                    style={{
-                      marginLeft: 10,
-                      backgroundColor: "white",
-                      borderRadius: 15,
-                    }}
-                  >
-                    <Image
-                      source={logo}
-                      style={{ width: 100 , height: 30 }} // Adjust padding as needed
+            <>
+              <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                  title: "",
+                  headerLeft: () => (
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        backgroundColor: "white",
+                        borderRadius: 15,
+                      }}
+                    >
+                      <Image
+                        source={logo}
+                        style={{ width: 100, height: 30 }} // Adjust padding as needed
+                      />
+                    </View>
+                  ),
+                  headerRight: () => (
+                    <AntDesign
+                      name="logout"
+                      size={24}
+                      color={colors.error}
+                      onPress={handleLogout}
                     />
-                  </View>
-                ),
-                headerRight: () => (
-                  <AntDesign
-                    name="logout"
-                    size={24}
-                    color={colors.error}
-                    onPress={handleLogout}
-                  />
-                ),
-              }}
-            />
+                  ),
+                }}
+              />
+              <Stack.Screen
+                name="InvoiceForm"
+                component={InvoiceForm}
+                options={{
+                  title: "Formulaire de facture",
+                  // headerLeft: () => (
+                  //   <View
+                  //     style={{
+                  //       marginLeft: 10,
+                  //       backgroundColor: "white",
+                  //       borderRadius: 15,
+                  //     }}
+                  //   >
+                  //     <Image
+                  //       source={logo}
+                  //       style={{ width: 100, height: 30 }} // Adjust padding as needed
+                  //     />
+                  //   </View>
+                  // ),
+                  headerRight: () => (
+                    <AntDesign
+                      name="logout"
+                      size={24}
+                      color={colors.error}
+                      onPress={handleLogout}
+                    />
+                  ),
+                }}
+              />
+              <Stack.Screen
+                name="InvoiceList"
+                component={InvoiceList}
+                options={{
+                  title: "Liste des factures",
+                  // headerLeft: () => (
+                  //   <View
+                  //     style={{
+                  //       marginLeft: 10,
+                  //       backgroundColor: "white",
+                  //       borderRadius: 15,
+                  //     }}
+                  //   >
+                  //     <Image
+                  //       source={logo}
+                  //       style={{ width: 100, height: 30 }} // Adjust padding as needed
+                  //     />
+                  //   </View>
+                  // ),
+                  headerRight: () => (
+                    <AntDesign
+                      name="logout"
+                      size={24}
+                      color={colors.error}
+                      onPress={handleLogout}
+                    />
+                  ),
+                }}
+              />
+            </>
           ) : (
             <>
               <Stack.Screen
                 name="Register"
                 component={RegisterScreen}
-                options={{ title: "Inscription",
-                 headerLeft: () => (
-                   <View
-                     style={{
-                       marginLeft: 10,
-                       backgroundColor: "white",
-                       borderRadius: 15,
-                     }}
-                   >
-                     <Image
-                       source={logo}
-                       style={{ width: 100, height: 30 }} // Adjust padding as needed
-                     />
-                   </View>
-                 ),
-                 }}
+                options={{
+                  title: "Inscription",
+                  headerLeft: () => (
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        backgroundColor: "white",
+                        borderRadius: 15,
+                      }}
+                    >
+                      <Image
+                        source={logo}
+                        style={{ width: 100, height: 30 }} // Adjust padding as needed
+                      />
+                    </View>
+                  ),
+                }}
               />
               <Stack.Screen
                 name="Login"
                 component={LoginScreen}
-                options={{ title: "Login",
-                 headerLeft: () => (
-                   <View
-                     style={{
-                       marginLeft: 10,
-                       backgroundColor: "white",
-                       borderRadius: 15,
-                     }}
-                   >
-                     <Image
-                       source={logo}
-                       style={{ width: 100, height: 30 }} // Adjust padding as needed
-                     />
-                   </View>
-                 ),
-                 }}
+                options={{
+                  title: "Login",
+                  headerLeft: () => (
+                    <View
+                      style={{
+                        marginLeft: 10,
+                        backgroundColor: "white",
+                        borderRadius: 15,
+                      }}
+                    >
+                      <Image
+                        source={logo}
+                        style={{ width: 100, height: 30 }} // Adjust padding as needed
+                      />
+                    </View>
+                  ),
+                }}
               />
             </>
           )}

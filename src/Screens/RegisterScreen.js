@@ -33,6 +33,8 @@ const RegisterStep1 = ({
   setNom,
   prenom,
   setPrenom,
+  commune,
+  setCommune,
   enterpriseName,
   setEnterpriseName,
   errors,
@@ -44,6 +46,8 @@ const RegisterStep1 = ({
     if (!prenom) errors.prenom = "Prénoms sont requis.";
     if (!enterpriseName)
       errors.enterpriseName = "Nom de l'entreprise est requis.";
+
+    if (!commune) errors.commune = "Le nom de la commune est requis.";
 
     if (Object.keys(errors).length > 0) {
       setErrors(errors);
@@ -86,6 +90,17 @@ const RegisterStep1 = ({
       {errors.enterpriseName && (
         <Text style={styles.errorText}>{errors.enterpriseName}</Text>
       )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Commune"
+        value={commune}
+        onChangeText={(text) => {
+          setCommune(text);
+          setErrors((prev) => ({ ...prev, commune: "" }));
+        }}
+      />
+      {errors.commune && <Text style={styles.errorText}>{errors.commune}</Text>}
       <View style={styles.btnContainer}>
         <TouchableOpacity style={styles.button} onPress={validateStep1}>
           <Text style={styles.buttonText}>
@@ -105,6 +120,8 @@ const RegisterStep2 = ({
   setTelephone,
   email,
   setEmail,
+  siteweb,
+  setSiteweb,
   password,
   setPassword,
   confirmPassword,
@@ -170,6 +187,14 @@ const RegisterStep2 = ({
       {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
       <TextInput
         style={styles.input}
+        placeholder="Site Internet"
+        value={siteweb}
+        onChangeText={(text) => {
+          setSiteweb(text);
+        }}
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Mot de passe"
         value={password}
         onChangeText={(text) => {
@@ -226,6 +251,8 @@ const RegisterScreen = () => {
   const [prenom, setPrenom] = useState("");
   const [enterpriseName, setEnterpriseName] = useState("");
   const [adresse, setAdresse] = useState("");
+  const [commune, setCommune] = useState("");
+  const [siteweb, setSiteweb] = useState("");
   const [telephone, setTelephone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -268,6 +295,8 @@ const RegisterScreen = () => {
         adresse,
         telephone,
         email,
+        commune,
+        siteweb,
       });
       setLoading(false);
       navigation.navigate("Login");
@@ -289,6 +318,8 @@ const RegisterScreen = () => {
             setPrenom={setPrenom}
             enterpriseName={enterpriseName}
             setEnterpriseName={setEnterpriseName}
+            commune={commune}
+            setCommune={setCommune}
             errors={errors}
             setErrors={setErrors}
           />
@@ -302,6 +333,8 @@ const RegisterScreen = () => {
             setTelephone={setTelephone}
             email={email}
             setEmail={setEmail}
+            siteweb={siteweb}
+            setSiteweb={setSiteweb}
             password={password}
             setPassword={setPassword}
             confirmPassword={confirmPassword}
