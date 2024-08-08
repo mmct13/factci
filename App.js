@@ -13,6 +13,7 @@ import { Alert, Image, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import InvoiceForm from "./src/Components/InvoiceForm";
 import InvoiceList from "./src/Components/InvoiceList";
+import GetStarted from "./src/Screens/GetStarted";
 
 // Couleurs de l'interface
 const colors = {
@@ -82,6 +83,7 @@ export default function App() {
             },
             headerTitleAlign: "center", // Align the title to center
           }}
+          initialRouteName={user ? "Home" : "GetStarted"}
         >
           {user ? (
             <>
@@ -175,6 +177,14 @@ export default function App() {
             </>
           ) : (
             <>
+              <Stack.Screen
+                name="GetStarted"
+                component={GetStarted}
+                options={{
+                  headerShown: false,
+                }}
+              />
+
               <Stack.Screen
                 name="Register"
                 component={RegisterScreen}

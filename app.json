@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "factci",
+    "name": "factCI",
     "slug": "factci",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,10 +18,16 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.mmct13.factci"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b866efee-97d9-4647-99aa-38c4e0f4f023"
+      }
     }
   }
 }

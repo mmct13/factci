@@ -11,6 +11,19 @@ import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 
+const colors = {
+  primary: "#2A3B47",
+  secondary: "#BDC3C7",
+  success: "#27AE60",
+  error: "#C0392B",
+  background: "#ECF0F1",
+  text: "#2A3B47",
+  contrast: "#FFFFFF",
+  accent: "#7F8C8D",
+  highlight: "#4A90E2",
+  darkBackground: "#1C2833",
+};
+
 const InvoiceForm = () => {
   const [clientName, setClientName] = useState("");
   const [items, setItems] = useState([]);
@@ -74,6 +87,7 @@ const InvoiceForm = () => {
         style={styles.input}
         value={clientName}
         onChangeText={setClientName}
+        placeholder="Entrez le nom du client"
       />
       {erreurs.clientName && (
         <Text style={styles.error}>{erreurs.clientName}</Text>
@@ -85,14 +99,13 @@ const InvoiceForm = () => {
         value={newItem.description}
         onChangeText={(text) => setNewItem({ ...newItem, description: text })}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Quantité"
         value={newItem.quantity}
         keyboardType="numeric"
         onChangeText={(text) =>
-          setNewItem({ ...newItem, quantity: parseInt(text) })
+          setNewItem({ ...newItem, quantity: text ? parseInt(text) : "" })
         }
       />
       <TextInput
@@ -101,11 +114,10 @@ const InvoiceForm = () => {
         value={newItem.unitPrice}
         keyboardType="numeric"
         onChangeText={(text) =>
-          setNewItem({ ...newItem, unitPrice: parseFloat(text) })
+          setNewItem({ ...newItem, unitPrice: text ? parseFloat(text) : "" })
         }
       />
-
-      {erreurs.items && <Text style={styles.error}>{erreurs.items}</Text>}
+      {erreurs.newItem && <Text style={styles.error}>{erreurs.newItem}</Text>}
       <TouchableOpacity style={styles.button} onPress={addItem}>
         <Text style={styles.buttonText}>Ajouter l'Article</Text>
       </TouchableOpacity>
@@ -130,19 +142,60 @@ const InvoiceForm = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  label: { fontSize: 18, marginBottom: 10 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10 },
-  button: { backgroundColor: "#4A90E2", padding: 10, marginVertical: 10 },
-  buttonText: { color: "white", textAlign: "center" },
-  submitButton: { backgroundColor: "#27AE60", padding: 10, marginVertical: 10 },
-  submitButtonText: { color: "white", textAlign: "center" },
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: colors.background,
+  },
+  label: {
+    fontSize: 18,
+    marginBottom: 10,
+    color: colors.primary,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: colors.secondary,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: colors.contrast,
+    color: colors.text,
+  },
+  button: {
+    backgroundColor: colors.highlight,
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  buttonText: {
+    color: colors.contrast,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  submitButton: {
+    backgroundColor: colors.success,
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+  },
+  submitButtonText: {
+    color: colors.contrast,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.secondary,
     marginBottom: 10,
   },
-  error: { color: "red", fontSize: 12, marginBottom: 10 },
+  error: {
+    color: colors.error,
+    fontSize: 12,
+    marginBottom: 10,
+  },
 });
 
 export default InvoiceForm;
