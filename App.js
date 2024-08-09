@@ -14,7 +14,8 @@ import { AntDesign } from "@expo/vector-icons";
 import InvoiceForm from "./src/Components/InvoiceForm";
 import InvoiceList from "./src/Components/InvoiceList";
 import GetStarted from "./src/Screens/GetStarted";
-
+import splash from "./assets/splash.png";
+import { ActivityIndicator, StyleSheet } from "react-native";
 // Couleurs de l'interface
 const colors = {
   primary: "#2A3B47",
@@ -31,9 +32,42 @@ const colors = {
 
 const Stack = createNativeStackNavigator();
 
+function SplashScreen() {
+  return (
+    <View style={styles.container}>
+      <Image source={splash} style={styles.image} />
+      <View style={styles.activityIndicator}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.contrast, // Fond blanc
+  },
+  image: {
+    width: "100%", // Adapter la largeur selon les besoins
+    resizeMode: "contain", // Pour maintenir le ratio d'aspect de l'image
+    marginBottom: 30, // Espace entre l'image et l'ActivityIndicator
+  },
+  activityIndicator: {
+    position: "absolute",
+    bottom: 20,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+
+  },
+});
+
 export default function App() {
   const [user, setUser] = useState(null);
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       if (user) {
@@ -41,11 +75,15 @@ export default function App() {
       } else {
         setUser(null);
       }
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
+  if (loading) {
+    return <SplashScreen />;
+  }
   const handleLogout = () => {
     Alert.alert(
       "Déconnexion",

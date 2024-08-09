@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ActivityIndicator
 } from "react-native";
 import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
@@ -33,6 +34,7 @@ const InvoiceForm = () => {
     unitPrice: "",
   });
   const [erreurs, setErreurs] = useState({});
+  const [submitting, setSubmitting] = useState(false);
   const navigation = useNavigation();
   const db = getFirestore();
   const userId = getAuth().currentUser.uid;
@@ -51,6 +53,10 @@ const InvoiceForm = () => {
     }
   };
 
+  const removeItem = (index) => {
+    setItems(items.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async () => {
     let errors = {};
 
@@ -63,6 +69,7 @@ const InvoiceForm = () => {
       return;
     } else {
       try {
+        setSubmitting(true);
         await addDoc(collection(db, "invoices"), {
           clientName,
           items,
@@ -73,6 +80,8 @@ const InvoiceForm = () => {
           createdAt: new Date(),
           userId,
         });
+
+        setSubmitting(false);
         navigation.navigate("InvoiceList");
       } catch (error) {
         console.error("Error adding invoice: ", error);
@@ -82,7 +91,7 @@ const InvoiceForm = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Nom du Client</Text>
+      <Text style={styles.label}>Nom du client</Text>
       <TextInput
         style={styles.input}
         value={clientName}
@@ -92,10 +101,10 @@ const InvoiceForm = () => {
       {erreurs.clientName && (
         <Text style={styles.error}>{erreurs.clientName}</Text>
       )}
-      <Text style={styles.label}>Nouvel Article</Text>
+      <Text style={styles.label}>Nouvel article</Text>
       <TextInput
         style={styles.input}
-        placeholder="Description"
+        placeholder="Designation"
         value={newItem.description}
         onChangeText={(text) => setNewItem({ ...newItem, description: text })}
       />
@@ -110,7 +119,7 @@ const InvoiceForm = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Prix Unitaire"
+        placeholder="Prix unitaire"
         value={newItem.unitPrice}
         keyboardType="numeric"
         onChangeText={(text) =>
@@ -119,23 +128,31 @@ const InvoiceForm = () => {
       />
       {erreurs.newItem && <Text style={styles.error}>{erreurs.newItem}</Text>}
       <TouchableOpacity style={styles.button} onPress={addItem}>
-        <Text style={styles.buttonText}>Ajouter l'Article</Text>
+        <Text style={styles.buttonText}>Ajouter l'article</Text>
       </TouchableOpacity>
 
       <FlatList
         data={items}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item, index }) => (
           <View style={styles.item}>
-            <Text>{item.description}</Text>
-            <Text>
-              {item.quantity} x {item.unitPrice} F CFA
-            </Text>
+            <View>
+              <Text>{item.description}</Text>
+              <Text>
+                {item.quantity} x {item.unitPrice} F CFA
+              </Text>
+            </View>
+            <TouchableOpacity onPress={() => removeItem(index)}>
+              <Text style={styles.removeButton}>Supprimer</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.submitButtonText}>Enregistrer la Facture</Text>
+      {erreurs.items && <Text style={styles.error}>{erreurs.items}</Text>}
+      <TouchableOpacity style={styles.submitButton} disabled={submitting} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>
+          {submitting ? <ActivityIndicator size="small" color="white" /> : "Enregistrar la facture"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -190,6 +207,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.secondary,
     marginBottom: 10,
+  },
+  removeButton: {
+    color: colors.error,
+    fontWeight: "bold",
   },
   error: {
     color: colors.error,
