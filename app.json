@@ -19,7 +19,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mmct13.factci"
+      "package": "com.mmct13.factci",
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"

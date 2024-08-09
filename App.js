@@ -36,9 +36,6 @@ function SplashScreen() {
   return (
     <View style={styles.container}>
       <Image source={splash} style={styles.image} />
-      <View style={styles.activityIndicator}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
     </View>
   );
 }
@@ -53,15 +50,6 @@ const styles = StyleSheet.create({
   image: {
     width: "100%", // Adapter la largeur selon les besoins
     resizeMode: "contain", // Pour maintenir le ratio d'aspect de l'image
-    marginBottom: 30, // Espace entre l'image et l'ActivityIndicator
-  },
-  activityIndicator: {
-    position: "absolute",
-    bottom: 20,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-
   },
 });
 

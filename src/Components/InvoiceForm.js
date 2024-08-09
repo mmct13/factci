@@ -151,7 +151,7 @@ const InvoiceForm = () => {
       {erreurs.items && <Text style={styles.error}>{erreurs.items}</Text>}
       <TouchableOpacity style={styles.submitButton} disabled={submitting} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>
-          {submitting ? <ActivityIndicator size="small" color="white" /> : "Enregistrar la facture"}
+          {submitting ? <ActivityIndicator size="small" color="white" /> : "Enregistrer la facture"}
         </Text>
       </TouchableOpacity>
     </View>
