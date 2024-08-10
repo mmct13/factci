@@ -43,8 +43,7 @@ const RegisterStep1 = ({
 }) => {
   const validateStep1 = () => {
     let errors = {};
-    if (!enterpriseName)
-      errors.enterpriseName = "Nom de l'entreprise est requis.";
+    if (!enterpriseName) errors.enterpriseName = "Nom de l'entreprise est requis.";
     if (!commune) errors.commune = "Le nom de la commune est requis.";
     if (!telephone) errors.telephone = "Téléphone est requis.";
 
@@ -282,7 +281,6 @@ const RegisterStep3 = ({
       {errors.nombreEmployes && (
         <Text style={styles.errorText}>{errors.nombreEmployes}</Text>
       )}
-
       <TextInput
         style={styles.input}
         placeholder="Rôle de l'utilisateur"
@@ -366,7 +364,7 @@ const RegisterScreen = () => {
       navigation.replace("Home");
     } catch (error) {
       setLoading(false);
-      alert(error.message);
+      setErrors({ general: error.message });
     }
   };
 
@@ -380,7 +378,6 @@ const RegisterScreen = () => {
             setEnterpriseName={setEnterpriseName}
             commune={commune}
             setCommune={setCommune}
-            
             telephone={telephone}
             setTelephone={setTelephone}
             siteweb={siteweb}
@@ -420,6 +417,7 @@ const RegisterScreen = () => {
             setErrors={setErrors}
           />
         )}
+        {errors.general && <Text style={styles.errorText}>{errors.general}</Text>}
         <View style={styles.linkContainer}>
           <TouchableOpacity onPress={() => navigation.replace("Login")}>
             <Text style={styles.linkText}>Déjà un compte ? Connectez-vous</Text>
@@ -437,12 +435,6 @@ const styles = StyleSheet.create({
     padding: 10,
     justifyContent: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    color: colors.text,
-  },
   input: {
     borderBottomWidth: 1,
     borderColor: colors.accent,
@@ -453,7 +445,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.highlight,
     padding: 10,
-    borderRadius: 50, // Assurez-vous que c'est la moitié de la taille du bouton
+    borderRadius: 25, // Assurez-vous que c'est la moitié de la taille du bouton
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 5,
@@ -467,14 +459,15 @@ const styles = StyleSheet.create({
   btnContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 45,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    gap: 45,
     marginTop: 10,
   },
   errorText: {
     color: colors.error,
-    fontSize: 8,
+    fontSize: 12,
+    marginVertical: 4,
   },
   linkContainer: {
     marginTop: 20,
@@ -482,8 +475,8 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: colors.primary,
-    fontSize: 12,
-    fontWeight: "light",
+    fontSize: 14,
+    fontWeight: "normal",
   },
 });
 

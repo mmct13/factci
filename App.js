@@ -3,19 +3,30 @@ import { useState, useEffect } from "react";
 import { auth } from "./src/utils/firebase";
 import { NavigationContainer } from "@react-navigation/native";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/Screens/HomeScreen";
 import LoginScreen from "./src/Screens/LoginScreen";
+import Profile from "./src/Screens/Profile";
 import RegisterScreen from "./src/Screens/RegisterScreen";
+import Cgu from "./src/Components/Cgu";
 import { StatusBar } from "expo-status-bar";
 import logo from "./assets/logo.png";
-import { Alert, Image, View } from "react-native";
+import {
+  Alert,
+  Image,
+  View,
+  Modal,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+} from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import InvoiceForm from "./src/Components/InvoiceForm";
 import InvoiceList from "./src/Components/InvoiceList";
 import GetStarted from "./src/Screens/GetStarted";
 import splash from "./assets/splash.png";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import Entypo from "@expo/vector-icons/Entypo";
 // Couleurs de l'interface
 const colors = {
   primary: "#2A3B47",
@@ -40,6 +51,105 @@ function SplashScreen() {
   );
 }
 
+const DropdownMenu = ({ handleLogout }) => {
+  const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const openMenu = () => {
+    setModalVisible(true);
+  };
+
+  const closeMenu = () => {
+    setModalVisible(false);
+  };
+
+  const handleOpenProfile = () => {
+    closeMenu();
+    navigation.navigate("Profile");
+  };
+  return (
+    <View>
+      <TouchableOpacity onPress={openMenu}>
+        <Entypo name="menu" size={30} color={colors.contrast} />
+      </TouchableOpacity>
+
+      <Modal
+        transparent={true}
+        visible={modalVisible}
+        animationType="fade"
+        onRequestClose={closeMenu}
+      >
+        <TouchableOpacity
+          style={dropdownStyles.modalBackground}
+          onPress={closeMenu}
+        >
+          <View style={dropdownStyles.menuContainer}>
+            <TouchableOpacity
+              style={dropdownStyles.menuItem}
+              onPress={() => {
+                handleOpenProfile();
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <AntDesign
+                  name="user"
+                  size={20}
+                  color={colors.primary}
+                  style={{ marginRight: 20 }}
+                />
+                <Text style={dropdownStyles.menuText}>Profil</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={dropdownStyles.menuItem}
+              onPress={() => {
+                closeMenu();
+                handleLogout();
+              }}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <AntDesign
+                  name="logout"
+                  size={20}
+                  color={colors.error}
+                  style={{ marginRight: 20 }}
+                />
+                <Text style={dropdownStyles.menuText}>Déconnexion</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Ajoutez d'autres boutons ici */}
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
+};
+
+const dropdownStyles = StyleSheet.create({
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  menuContainer: {
+    width: 200,
+    backgroundColor: "white",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  menuItem: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.accent,
+  },
+  menuText: {
+    color: colors.text,
+    fontSize: 16,
+  },
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -56,6 +166,7 @@ const styles = StyleSheet.create({
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
       if (user) {
@@ -72,6 +183,7 @@ export default function App() {
   if (loading) {
     return <SplashScreen />;
   }
+
   const handleLogout = () => {
     Alert.alert(
       "Déconnexion",
@@ -101,13 +213,13 @@ export default function App() {
         <Stack.Navigator
           screenOptions={{
             headerStyle: {
-              backgroundColor: colors.primary, // Background color of the header
+              backgroundColor: colors.primary,
             },
-            headerTintColor: colors.contrast, // Text color in the header
+            headerTintColor: colors.contrast,
             headerTitleStyle: {
               fontWeight: "bold",
             },
-            headerTitleAlign: "center", // Align the title to center
+            headerTitleAlign: "center",
           }}
           initialRouteName={user ? "Home" : "GetStarted"}
         >
@@ -126,19 +238,11 @@ export default function App() {
                         borderRadius: 15,
                       }}
                     >
-                      <Image
-                        source={logo}
-                        style={{ width: 100, height: 30 }} // Adjust padding as needed
-                      />
+                      <Image source={logo} style={{ width: 100, height: 30 }} />
                     </View>
                   ),
                   headerRight: () => (
-                    <AntDesign
-                      name="logout"
-                      size={24}
-                      color={colors.error}
-                      onPress={handleLogout}
-                    />
+                    <DropdownMenu handleLogout={handleLogout} />
                   ),
                 }}
               />
@@ -147,27 +251,8 @@ export default function App() {
                 component={InvoiceForm}
                 options={{
                   title: "Formulaire de facture",
-                  // headerLeft: () => (
-                  //   <View
-                  //     style={{
-                  //       marginLeft: 10,
-                  //       backgroundColor: "white",
-                  //       borderRadius: 15,
-                  //     }}
-                  //   >
-                  //     <Image
-                  //       source={logo}
-                  //       style={{ width: 100, height: 30 }} // Adjust padding as needed
-                  //     />
-                  //   </View>
-                  // ),
                   headerRight: () => (
-                    <AntDesign
-                      name="logout"
-                      size={24}
-                      color={colors.error}
-                      onPress={handleLogout}
-                    />
+                    <DropdownMenu handleLogout={handleLogout} />
                   ),
                 }}
               />
@@ -176,28 +261,23 @@ export default function App() {
                 component={InvoiceList}
                 options={{
                   title: "Liste des factures",
-                  // headerLeft: () => (
-                  //   <View
-                  //     style={{
-                  //       marginLeft: 10,
-                  //       backgroundColor: "white",
-                  //       borderRadius: 15,
-                  //     }}
-                  //   >
-                  //     <Image
-                  //       source={logo}
-                  //       style={{ width: 100, height: 30 }} // Adjust padding as needed
-                  //     />
-                  //   </View>
-                  // ),
                   headerRight: () => (
-                    <AntDesign
-                      name="logout"
-                      size={24}
-                      color={colors.error}
-                      onPress={handleLogout}
-                    />
+                    <DropdownMenu handleLogout={handleLogout} />
                   ),
+                }}
+              />
+              <Stack.Screen
+                name="Profile"
+                component={Profile}
+                options={{
+                  title: "Profil",
+                }}
+              />
+              <Stack.Screen
+                name="CGU"
+                component={Cgu}
+                options={{
+                  title: "Conditions d'utilisation",
                 }}
               />
             </>
@@ -210,7 +290,6 @@ export default function App() {
                   headerShown: false,
                 }}
               />
-
               <Stack.Screen
                 name="Register"
                 component={RegisterScreen}
@@ -224,10 +303,7 @@ export default function App() {
                         borderRadius: 15,
                       }}
                     >
-                      <Image
-                        source={logo}
-                        style={{ width: 100, height: 30 }} // Adjust padding as needed
-                      />
+                      <Image source={logo} style={{ width: 100, height: 30 }} />
                     </View>
                   ),
                 }}
@@ -236,7 +312,7 @@ export default function App() {
                 name="Login"
                 component={LoginScreen}
                 options={{
-                  title: "Login",
+                  title: "Connexion",
                   headerLeft: () => (
                     <View
                       style={{
@@ -245,10 +321,7 @@ export default function App() {
                         borderRadius: 15,
                       }}
                     >
-                      <Image
-                        source={logo}
-                        style={{ width: 100, height: 30 }} // Adjust padding as needed
-                      />
+                      <Image source={logo} style={{ width: 100, height: 30 }} />
                     </View>
                   ),
                 }}

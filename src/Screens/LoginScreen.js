@@ -55,7 +55,56 @@ const LoginScreen = () => {
       navigation.navigate("Home"); // Remplace par la page appropriée après connexion
     } catch (error) {
       setLoading(false);
-      setErrors({ email: error.message });
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          setErrors({ email: "L'adresse email ou le mot de passe est incorrect." });
+          break;
+        case 'auth/user-disabled':
+          setErrors({ email: "Ce compte a été désactivé." });
+          break;
+        case 'auth/user-not-found':
+          setErrors({ email: "Aucun utilisateur trouvé avec cette adresse email." });
+          break;
+        case 'auth/wrong-password':
+          setErrors({ password: "Le mot de passe est incorrect." });
+          break;
+        case 'auth/email-already-in-use':
+          setErrors({ email: "Cette adresse email est déjà utilisée." });
+          break;
+        case 'auth/weak-password':
+          setErrors({ password: "Le mot de passe est trop faible." });
+          break;
+        case 'auth/operation-not-allowed':
+          setErrors({ email: "Cette méthode d'authentification n'est pas autorisée." });
+          break;
+        case 'auth/expired-action-code':
+          setErrors({ email: "Le code d'action a expiré." });
+          break;
+        case 'auth/invalid-action-code':
+          setErrors({ email: "Le code d'action est invalide." });
+          break;
+        case 'auth/invalid-verification-code':
+          setErrors({ email: "Le code de vérification est invalide." });
+          break;
+        case 'auth/invalid-verification-id':
+          setErrors({ email: "L'ID de vérification est invalide." });
+          break;
+        case 'auth/user-token-expired':
+          setErrors({ email: "Le jeton de l'utilisateur a expiré. Veuillez vous reconnecter." });
+          break;
+        case 'auth/cancelled-popup-request':
+          setErrors({ email: "La demande de fenêtre contextuelle a été annulée." });
+          break;
+        case 'auth/popup-closed-by-user':
+          setErrors({ email: "La fenêtre contextuelle a été fermée avant la fin de la connexion." });
+          break;
+        case 'auth/too-many-requests':
+          setErrors({ email: "Trop de tentatives échouées. Veuillez réessayer plus tard." });
+          break;
+        default:
+          setErrors({ email: "Une erreur inconnue est survenue." });
+          break;
+      }
     }
   };
 
@@ -84,7 +133,6 @@ const LoginScreen = () => {
           }}
           secureTextEntry
           autoCapitalize="none"
-          
         />
         {errors.password && (
           <Text style={styles.errorText}>{errors.password}</Text>
