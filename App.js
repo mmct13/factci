@@ -20,6 +20,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  Button,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import InvoiceForm from "./src/Components/InvoiceForm";
@@ -27,6 +28,8 @@ import InvoiceList from "./src/Components/InvoiceList";
 import GetStarted from "./src/Screens/GetStarted";
 import splash from "./assets/splash.png";
 import Entypo from "@expo/vector-icons/Entypo";
+import { useNetInfo } from "@react-native-community/netinfo"; // Importation de useNetInfo
+
 // Couleurs de l'interface
 const colors = {
   primary: "#2A3B47",
@@ -47,6 +50,15 @@ function SplashScreen() {
   return (
     <View style={styles.container}>
       <Image source={splash} style={styles.image} />
+    </View>
+  );
+}
+
+function OfflineScreen({ onRetry }) {
+  return (
+    <View style={styles.offlineContainer}>
+      <Text style={styles.offlineText}>Pas de connexion Internet</Text>
+      <Button title="Réessayez" onPress={onRetry} color={colors.highlight} />
     </View>
   );
 }
@@ -161,11 +173,31 @@ const styles = StyleSheet.create({
     width: "100%", // Adapter la largeur selon les besoins
     resizeMode: "contain", // Pour maintenir le ratio d'aspect de l'image
   },
+  offlineContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.background,
+  },
+  offlineText: {
+    fontSize: 18,
+    marginBottom: 20,
+    color: colors.text,
+  },
 });
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const netInfo = useNetInfo();
+
+  const handleRetry = () => {
+    // Réessayez l'action de connexion
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(getAuth(), (user) => {
@@ -182,6 +214,10 @@ export default function App() {
 
   if (loading) {
     return <SplashScreen />;
+  }
+
+  if (!netInfo.isConnected) {
+    return <OfflineScreen onRetry={handleRetry} />;
   }
 
   const handleLogout = () => {
