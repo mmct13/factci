@@ -445,12 +445,12 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: colors.highlight,
     padding: 10,
-    borderRadius: 25, // Assurez-vous que c'est la moitié de la taille du bouton
+    borderRadius: 25, 
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 5,
-    width: 50, // Ajustez la largeur pour que le bouton soit circulaire
-    height: 50, // Assurez-vous que la hauteur est égale à la largeur
+    width: 50, 
+    height: 50, 
   },
   buttonText: {
     color: colors.darkBackground,

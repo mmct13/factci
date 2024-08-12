@@ -34,7 +34,7 @@ const GeneratePDF = ({ invoice }) => {
     const formatCurrency = (value) => {
       return value.toLocaleString("fr-FR", { minimumFractionDigits: 2 });
     };
-  
+
     return `
       <html>
         <head>
@@ -115,7 +115,10 @@ const GeneratePDF = ({ invoice }) => {
         <body>
           <div class="invoice-container">
             <div class="header">
-              <div class="invoice-title">FACTURE</div>
+              <div class="invoice-title">
+              ${new Date(
+                invoice.createdAt.seconds * 1000
+              ).toLocaleDateString()}<br/></div>
             </div>
   
             <div class="company-info">
@@ -129,15 +132,11 @@ const GeneratePDF = ({ invoice }) => {
             </div>
   
             <div class="client-info">
-              <strong>${invoice.clientName}</strong>
+              Client : <strong>${invoice.clientName}</strong>
             </div>
             <div class="clearfix"></div>
   
-            <div class="invoice-details">
-              <strong>Date:</strong> ${new Date(
-                invoice.createdAt.seconds * 1000
-              ).toLocaleDateString()}<br/>
-            </div>
+            
   
             <table>
               <thead>
@@ -156,7 +155,9 @@ const GeneratePDF = ({ invoice }) => {
                     <td>${item.quantity}</td>
                     <td>${item.description}</td>
                     <td>${formatCurrency(item.unitPrice)} F CFA</td>
-                    <td>${formatCurrency(item.quantity * item.unitPrice)} F CFA</td>
+                    <td>${formatCurrency(
+                      item.quantity * item.unitPrice
+                    )} F CFA</td>
                   </tr>
                 `
                   )
@@ -182,10 +183,14 @@ const GeneratePDF = ({ invoice }) => {
     }
 
     const htmlContent = generateHTMLContent(invoice);
-    const { uri: tempUri } = await Print.printToFileAsync({ html: htmlContent });
+    const { uri: tempUri } = await Print.printToFileAsync({
+      html: htmlContent,
+    });
 
     // Déplace le fichier vers un répertoire plus accessible
-    const fileUri = FileSystem.documentDirectory + `facture_${new Date().getTime()}_${userData?.enterpriseName}.pdf`;
+    const fileUri =
+      FileSystem.documentDirectory +
+      `facture_${new Date().getTime()}_${userData?.enterpriseName}.pdf`;
 
     try {
       await FileSystem.moveAsync({
@@ -197,7 +202,10 @@ const GeneratePDF = ({ invoice }) => {
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(fileUri);
       } else {
-        Alert.alert("Erreur", "Le partage n'est pas disponible sur cet appareil.");
+        Alert.alert(
+          "Erreur",
+          "Le partage n'est pas disponible sur cet appareil."
+        );
       }
     } catch (error) {
       console.error("Erreur lors de l'ouverture du fichier PDF", error);
