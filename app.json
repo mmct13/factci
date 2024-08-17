@@ -20,7 +20,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.mmct13.factci",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "favicon": "./assets/favicon.png"

@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image,
 } from "react-native";
 import {
   getFirestore,
@@ -20,24 +21,25 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import GeneratePDF from "./GeneratePDF";
 import { getAuth } from "firebase/auth";
-import { MaterialIcons } from "@expo/vector-icons"; // Assurez-vous d'avoir installé @expo/vector-icons
+import { MaterialIcons } from "@expo/vector-icons";
+import rien from "../../assets/rienici.png"; // Assurez-vous que le chemin est correct
 
 const colors = {
-  primary: "#2A3B47",
-  secondary: "#BDC3C7",
-  success: "#27AE60",
-  error: "#C0392B",
-  background: "#ECF0F1",
-  text: "#2A3B47",
+  primary: "#333333",
+  secondary: "#B3B6B7",
+  success: "#F1C40F",
+  error: "#E74C3C",
+  background: "#F2F3F4",
+  text: "#333333",
   contrast: "#FFFFFF",
-  accent: "#7F8C8D",
-  highlight: "#4A90E2",
-  darkBackground: "#1C2833",
+  accent: "#F39C12",
+  highlight: "#E67E22",
+  darkBackground: "#2C3E50",
 };
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
-  const [loading, setLoading] = useState(true); // État pour le chargement
+  const [loading, setLoading] = useState(true);
   const db = getFirestore();
   const navigation = useNavigation();
 
@@ -45,7 +47,7 @@ const InvoiceList = () => {
     const user = getAuth().currentUser;
     if (!user) {
       navigation.replace("Login");
-      return; // Assurer que le reste du code n'est pas exécuté si l'utilisateur n'est pas connecté
+      return;
     }
 
     const q = query(
@@ -58,12 +60,12 @@ const InvoiceList = () => {
         ...doc.data(),
       }));
       setInvoices(invoicesData);
-      setLoading(false); // Fin du chargement
+      setLoading(false);
     });
 
     return () => {
       unsubscribe();
-      setLoading(false); // Assurer que le chargement est terminé si le composant est démonté
+      setLoading(false);
     };
   }, [db, navigation]);
 
@@ -106,6 +108,11 @@ const InvoiceList = () => {
     <View style={styles.container}>
       {loading ? (
         <ActivityIndicator size="large" color={colors.highlight} />
+      ) : invoices.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Image source={rien} style={styles.emptyImage} />
+          <Text style={styles.emptyText}>Aucune facture enregistrée</Text>
+        </View>
       ) : (
         <FlatList
           data={invoices}
@@ -137,7 +144,21 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: colors.background,
-    justifyContent: "center", // Centrer l'ActivityIndicator verticalement
+    justifyContent: "center",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyImage: {
+    width: 300,
+    height: 300,
+    marginBottom: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    color: colors.secondary,
   },
   invoiceItem: {
     padding: 15,

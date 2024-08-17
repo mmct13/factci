@@ -12,17 +12,18 @@ import logo from "../../assets/logoA.png";
 import recu from "../../assets/recu.png";
 // Couleurs de l'interface
 const colors = {
-  primary: "#2A3B47",
-  secondary: "#BDC3C7",
-  success: "#27AE60",
-  error: "#C0392B",
-  background: "#ECF0F1",
-  text: "#2A3B47",
-  contrast: "#FFFFFF",
-  accent: "#7F8C8D",
-  highlight: "#4A90E2",
-  darkBackground: "#1C2833",
+  primary: "#333333",       // Noir charbon
+  secondary: "#B3B6B7",     // Gris métallique
+  success: "#F1C40F",       // Or éclatant
+  error: "#E74C3C",         // Rouge vif
+  background: "#F2F3F4",    // Gris très clair
+  text: "#333333",          // Noir profond pour le texte
+  contrast: "#FFFFFF",      // Blanc pur
+  accent: "#F39C12",        // Or pour les accents
+  highlight: "#E67E22",     // Orange pour les éléments en surbrillance
+  darkBackground: "#2C3E50",// Bleu foncé
 };
+
 
 const GetStarted = () => {
   const navigation = useNavigation();

@@ -36,144 +36,156 @@ const GeneratePDF = ({ invoice }) => {
     };
 
     return `
-      <html>
-        <head>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              padding: 20px;
-              margin: 0;
-              box-sizing: border-box;
-            }
-            .invoice-container {
-              width: 100%;
-              max-width: 800px;
-              margin: auto;
-              border: 1px solid #ddd;
-              padding: 20px;
-              box-sizing: border-box;
-            }
-            .header {
-              text-align: right;
-              margin-bottom: 40px;
-            }
-            .header .invoice-title {
-              font-size: 24px;
-              font-weight: bold;
-              background-color: #E5EFF8;
-              padding: 5px 15px;
-              display: inline-block;
-            }
-            .company-info, .client-info {
-              margin-bottom: 20px;
-            }
-            .company-info {
-              float: left;
-              width: 45%;
-            }
-            .client-info {
-              float: right;
-              width: 45%;
-              text-align: right;
-            }
-            .clearfix {
-              clear: both;
-            }
-            .invoice-details {
-              margin-bottom: 30px;
-            }
-            .invoice-details strong {
-              display: block;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 20px;
-            }
-            table, th, td {
-              border: 1px solid black;
-            }
-            th, td {
-              padding: 10px;
-              text-align: left;
-            }
-            .totals {
-              margin-top: 20px;
-              text-align: right;
-            }
-            .totals div {
-              margin-bottom: 5px;
-            }
-            .footer {
-              text-align: left;
-              font-size: 12px;
-              color: gray;
-              margin-top: 50px;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="invoice-container">
-            <div class="header">
-              <div class="invoice-title">
+    <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            box-sizing: border-box;
+            position: relative;
+          }
+          .watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 400px;
+            color: rgba(200, 200, 200, 0.2); /* Couleur grise avec transparence */
+            z-index: 2;
+            user-select: none; /* Empêche la sélection du texte */
+          }
+          .invoice-container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 1;
+            background-color: white;
+          }
+          .header {
+            text-align: right;
+            margin-bottom: 40px;
+          }
+          .header .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #E5EFF8;
+            padding: 5px 15px;
+            display: inline-block;
+          }
+          .company-info, .client-info {
+            margin-bottom: 20px;
+          }
+          .company-info {
+            float: left;
+            width: 45%;
+          }
+          .client-info {
+            float: right;
+            width: 45%;
+            text-align: right;
+          }
+          .clearfix {
+            clear: both;
+          }
+          .invoice-details {
+            margin-bottom: 30px;
+          }
+          .invoice-details strong {
+            display: block;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+          }
+          table, th, td {
+            border: 1px solid black;
+          }
+          th, td {
+            padding: 10px;
+            text-align: left;
+          }
+          .totals {
+            margin-top: 20px;
+            text-align: right;
+          }
+          .totals div {
+            margin-bottom: 5px;
+          }
+          .footer {
+            text-align: left;
+            font-size: 12px;
+            color: gray;
+            margin-top: 50px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="watermark">factCI</div> <!-- Filigrane ajouté ici -->
+        <div class="invoice-container">
+          <div class="header">
+            <div class="invoice-title">
               ${new Date(
                 invoice.createdAt.seconds * 1000
               ).toLocaleDateString()}<br/></div>
-            </div>
-  
-            <div class="company-info">
-              <strong>${
-                userData?.enterpriseName || "Le nom de votre société"
-              }</strong>
-              <p>${userData?.commune || "Adresse"}<br/>
-              ${userData?.telephone || "Téléphone"} / ${
+          </div>
+
+          <div class="company-info">
+            <strong>${
+              userData?.enterpriseName || "Le nom de votre société"
+            }</strong>
+            <p>${userData?.commune || "Adresse"}<br/>
+            ${userData?.telephone || "Téléphone"} / ${
       userData?.email || "Email"
     }<br/>${userData?.siteweb || " "}</p>
-            </div>
-  
-            <div class="client-info">
-              Client : <strong>${invoice.clientName}</strong>
-            </div>
-            <div class="clearfix"></div>
-  
-            
-  
-            <table>
-              <thead>
-                <tr>
-                  <th>Quantité</th>
-                  <th>Désignation</th>
-                  <th>Prix unitaire HT</th>
-                  <th>Prix total HT</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${invoice.items
-                  .map(
-                    (item) => `
-                  <tr>
-                    <td>${item.quantity}</td>
-                    <td>${item.description}</td>
-                    <td>${formatCurrency(item.unitPrice)} F CFA</td>
-                    <td>${formatCurrency(
-                      item.quantity * item.unitPrice
-                    )} F CFA</td>
-                  </tr>
-                `
-                  )
-                  .join("")}
-              </tbody>
-            </table>
-  
-            <div class="totals">
-              <div><strong>Total Hors Taxe :</strong> ${formatCurrency(
-                invoice.total
-              )} F CFA</div>             
-            </div>
           </div>
-        </body>
-      </html>
-    `;
+
+          <div class="client-info">
+            Client : <strong>${invoice.clientName}</strong>
+          </div>
+          <div class="clearfix"></div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Quantité</th>
+                <th>Désignation</th>
+                <th>Prix unitaire HT</th>
+                <th>Prix total HT</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${invoice.items
+                .map(
+                  (item) => `
+                <tr>
+                  <td>${item.quantity}</td>
+                  <td>${item.description}</td>
+                  <td>${formatCurrency(item.unitPrice)} F CFA</td>
+                  <td>${formatCurrency(
+                    item.quantity * item.unitPrice
+                  )} F CFA</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+
+          <div class="totals">
+            <div><strong>Total Hors Taxe :</strong> ${formatCurrency(
+              invoice.total
+            )} F CFA</div>             
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
   };
 
   const handleGeneratePDF = async () => {
