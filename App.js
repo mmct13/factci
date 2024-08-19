@@ -26,6 +26,7 @@ import { AntDesign } from "@expo/vector-icons";
 import InvoiceForm from "./src/Components/InvoiceForm";
 import InvoiceList from "./src/Components/InvoiceList";
 import GetStarted from "./src/Screens/GetStarted";
+import ModifierProfile from "./src/Components/ModifierProfile";
 import splash from "./assets/splash.png";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useNetInfo } from "@react-native-community/netinfo"; // Importation de useNetInfo
@@ -306,6 +307,13 @@ export default function App() {
                 component={Profile}
                 options={{
                   title: "Profil",
+                }}
+              />
+              <Stack.Screen
+                name="ModifierProfil"
+                component={ModifierProfile}
+                options={{
+                  title: "Modifier mon profil",
                 }}
               />
               <Stack.Screen

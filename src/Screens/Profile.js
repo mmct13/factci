@@ -4,12 +4,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-} from"react-native";
+} from "react-native";
 import React, { useState, useEffect } from "react";
-import { AntDesign } from"@expo/vector-icons";
-import { useNavigation } from"@react-navigation/native";
-import { getFirestore, doc, getDoc } from"firebase/firestore";
-import { getAuth } from"firebase/auth";
+import { AntDesign } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -21,16 +21,16 @@ const Profile = () => {
         const auth = getAuth();
         const user = auth.currentUser;
         const db = getFirestore();
-        const docRef = doc(db, "users", user.uid); // Fetch the document using the user's UID 
+        const docRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-          setUserData(docSnap.data()); // Set the user data from Firestore
+          setUserData(docSnap.data());
         } else {
-          console.log("No such document!");
+          console.log("Aucun document correspondant");
         }
       } catch (error) {
-        console.error("Error fetching document:", error);
+        console.error("Erreur d'obtention des données:", error);
       }
     };
 
@@ -39,21 +39,24 @@ const Profile = () => {
 
   if (!userData) {
     return (
-      <View style={styles.container}><Text>Loading...</Text></View>
+      <View style={styles.container}>
+        <Text>Chargement ...</Text>
+      </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity style={styles.button}>
-        <Text style={styles.nomcomplet}>{`${userData.nom} ${userData.prenom} - ${userData.enterpriseName}`}
+        <Text style={styles.nomcomplet}>
+          {`${userData.nom} ${userData.prenom} - ${userData.enterpriseName}`}
         </Text>
         <AntDesign name="right" size={16} color="black" style={styles.icon} />
-        </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.button}>
+      </TouchableOpacity>
+      {/* <TouchableOpacity style={styles.button}>
           <Text style={styles.text}>{`Entreprise: ${userData.enterpriseName}`}</Text>
           </TouchableOpacity> */}
-          <TouchableOpacity
+      <TouchableOpacity
         style={styles.button}
         onPress={() => {
           navigation.navigate("CGU");
@@ -63,8 +66,7 @@ const Profile = () => {
           Voir les Conditions Générales d'Utilisation
         </Text>
         <AntDesign name="right" size={14} color="black" style={styles.icon} />
-        </TouchableOpacity>
-      {/* Ajoutez ici d'autres éléments de la page de profil, si nécessaire */}
+      </TouchableOpacity>
     </ScrollView>
   );
 };

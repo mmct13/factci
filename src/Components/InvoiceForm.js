@@ -6,25 +6,32 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert,
 } from "react-native";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 
 const colors = {
-  primary: "#333333",       // Noir charbon
-  secondary: "#B3B6B7",     // Gris métallique
-  success: "#F1C40F",       // Or éclatant
-  error: "#E74C3C",         // Rouge vif
-  background: "#F2F3F4",    // Gris très clair
-  text: "#333333",          // Noir profond pour le texte
-  contrast: "#FFFFFF",      // Blanc pur
-  accent: "#F39C12",        // Or pour les accents
-  highlight: "#E67E22",     // Orange pour les éléments en surbrillance
-  darkBackground: "#2C3E50",// Bleu foncé
+  primary: "#333333", // Noir charbon
+  secondary: "#B3B6B7", // Gris métallique
+  success: "#F1C40F", // Or éclatant
+  error: "#E74C3C", // Rouge vif
+  background: "#F2F3F4", // Gris très clair
+  text: "#333333", // Noir profond pour le texte
+  contrast: "#FFFFFF", // Blanc pur
+  accent: "#F39C12", // Or pour les accents
+  highlight: "#E67E22", // Orange pour les éléments en surbrillance
+  darkBackground: "#2C3E50", // Bleu foncé
 };
-
 
 const InvoiceForm = () => {
   const [clientName, setClientName] = useState("");
@@ -71,6 +78,24 @@ const InvoiceForm = () => {
     } else {
       try {
         setSubmitting(true);
+
+        // Fetch existing invoices count for the user
+        const invoicesQuery = query(
+          collection(db, "invoices"),
+          where("userId", "==", userId)
+        );
+        const querySnapshot = await getDocs(invoicesQuery);
+        const invoiceCount = querySnapshot.size;
+
+        if (invoiceCount >= 5) {
+          setSubmitting(false);
+          Alert.alert(
+            "Limite atteinte",
+            "Vous avez atteint la limite de 5 factures. Veuillez me contacter à marshallchrist@yahoo.com."
+          );
+          return;
+        }
+
         await addDoc(collection(db, "invoices"), {
           clientName,
           items,
@@ -86,6 +111,7 @@ const InvoiceForm = () => {
         navigation.navigate("InvoiceList");
       } catch (error) {
         console.error("Error adding invoice: ", error);
+        setSubmitting(false);
       }
     }
   };
@@ -150,9 +176,17 @@ const InvoiceForm = () => {
         )}
       />
       {erreurs.items && <Text style={styles.error}>{erreurs.items}</Text>}
-      <TouchableOpacity style={styles.submitButton} disabled={submitting} onPress={handleSubmit}>
+      <TouchableOpacity
+        style={styles.submitButton}
+        disabled={submitting}
+        onPress={handleSubmit}
+      >
         <Text style={styles.submitButtonText}>
-          {submitting ? <ActivityIndicator size="small" color="white" /> : "Enregistrer la facture"}
+          {submitting ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            "Enregistrer la facture"
+          )}
         </Text>
       </TouchableOpacity>
     </View>

@@ -3,11 +3,20 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const GeneratePDF = ({ invoice }) => {
   const [userData, setUserData] = useState(null);
+  const [invoiceCount, setInvoiceCount] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,6 +30,14 @@ const GeneratePDF = ({ invoice }) => {
 
         if (docSnap.exists()) {
           setUserData(docSnap.data());
+
+          // Fetch invoices count
+          const invoicesQuery = query(
+            collection(db, "invoices"),
+            where("userId", "==", user.uid)
+          );
+          const querySnapshot = await getDocs(invoicesQuery);
+          setInvoiceCount(querySnapshot.size);
         } else {
           console.log("No such document!");
         }
@@ -36,7 +53,7 @@ const GeneratePDF = ({ invoice }) => {
     };
 
     return `
-    <html>
+    <html> 
       <head>
         <style>
           body {
@@ -184,6 +201,7 @@ const GeneratePDF = ({ invoice }) => {
           </div>
         </div>
       </body>
+    
     </html>
   `;
   };
@@ -191,6 +209,14 @@ const GeneratePDF = ({ invoice }) => {
   const handleGeneratePDF = async () => {
     if (!userData) {
       console.log("User data not loaded yet");
+      return;
+    }
+
+    if (invoiceCount >= 10) {
+      Alert.alert(
+        "Limite atteinte",
+        "Vous avez atteint la limite de 10 factures. Veuillez me contacter à marshallchrist@yahoo.com pour plus d'informations."
+      );
       return;
     }
 
@@ -239,7 +265,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   button: {
-    backgroundColor: "#4A90E2",
+    backgroundColor: "#F39C12",
     padding: 10,
     marginVertical: 10,
   },
