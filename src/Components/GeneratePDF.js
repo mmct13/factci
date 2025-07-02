@@ -63,16 +63,7 @@ const GeneratePDF = ({ invoice }) => {
             box-sizing: border-box;
             position: relative;
           }
-          .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 400px;
-            color: rgba(200, 200, 200, 0.2); /* Couleur grise avec transparence */
-            z-index: 2;
-            user-select: none; /* Empêche la sélection du texte */
-          }
+          
           .invoice-container {
             width: 100%;
             max-width: 800px;
@@ -143,7 +134,6 @@ const GeneratePDF = ({ invoice }) => {
         </style>
       </head>
       <body>
-        <div class="watermark">factCI</div> <!-- Filigrane ajouté ici -->
         <div class="invoice-container">
           <div class="header">
             <div class="invoice-title">
