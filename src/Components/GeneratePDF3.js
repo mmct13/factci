@@ -3,20 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import * as Print from "expo-print";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
-const GeneratePDF = ({ invoice }) => {
+const GeneratePDF3 = ({ invoice }) => {
   const [userData, setUserData] = useState(null);
-  const [invoiceCount, setInvoiceCount] = useState(0);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -30,14 +21,6 @@ const GeneratePDF = ({ invoice }) => {
 
         if (docSnap.exists()) {
           setUserData(docSnap.data());
-
-          // Fetch invoices count
-          const invoicesQuery = query(
-            collection(db, "invoices"),
-            where("userId", "==", user.uid)
-          );
-          const querySnapshot = await getDocs(invoicesQuery);
-          setInvoiceCount(querySnapshot.size);
         } else {
           console.log("No such document!");
         }
@@ -53,117 +36,98 @@ const GeneratePDF = ({ invoice }) => {
     };
 
     return `
-    <html> 
+    <html>
       <head>
         <style>
           body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            margin: 0;
-            box-sizing: border-box;
-            position: relative;
+            font-family: 'Times New Roman', serif;
+            padding: 40px;
+            background-color: #fff;
           }
-          
           .invoice-container {
-            width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
+            border: 1px solid #ccc;
             padding: 20px;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 1;
-            background-color: white;
           }
           .header {
-            text-align: right;
-            margin-bottom: 40px;
-          }
-          .header .invoice-title {
-            font-size: 24px;
-            font-weight: bold;
-            background-color: #E5EFF8;
-            padding: 5px 15px;
-            display: inline-block;
-          }
-          .company-info, .client-info {
-            margin-bottom: 20px;
-          }
-          .company-info {
-            float: left;
-            width: 45%;
-          }
-          .client-info {
-            float: right;
-            width: 45%;
-            text-align: right;
-          }
-          .clearfix {
-            clear: both;
-          }
-          .invoice-details {
+            text-align: center;
+            border-bottom: 3px double #000;
+            padding-bottom: 15px;
             margin-bottom: 30px;
           }
-          .invoice-details strong {
-            display: block;
+          .logo-placeholder {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+          }
+          .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+          }
+          .company-info, .client-info {
+            font-size: 14px;
+          }
+          .client-info {
+            text-align: right;
           }
           table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-          }
-          table, th, td {
-            border: 1px solid black;
+            margin: 20px 0;
           }
           th, td {
+            border: 1px solid #000;
             padding: 10px;
             text-align: left;
           }
-          .totals {
-            margin-top: 20px;
-            text-align: right;
+          th {
+            background-color: #2c3e50;
+            color: white;
           }
-          .totals div {
-            margin-bottom: 5px;
+          .totals {
+            text-align: right;
+            font-size: 16px;
+            margin-top: 20px;
+            border-top: 2px solid #000;
+            padding-top: 10px;
           }
           .footer {
-            text-align: left;
+            text-align: center;
             font-size: 12px;
-            color: gray;
-            margin-top: 50px;
+            color: #333;
+            margin-top: 40px;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
           }
         </style>
       </head>
       <body>
         <div class="invoice-container">
           <div class="header">
-            <div class="invoice-title">
-              ${new Date(
-                invoice.createdAt.seconds * 1000
-              ).toLocaleDateString()}<br/></div>
+            <div class="logo-placeholder">${userData?.enterpriseName || "Votre Société"}</div>
+            <p>Facture émise le: ${new Date(invoice.createdAt.seconds * 1000).toLocaleDateString()}</p>
           </div>
-
-          <div class="company-info">
-            <strong>${
-              userData?.enterpriseName || "Le nom de votre société"
-            }</strong>
-            <p>${userData?.commune || "Adresse"}<br/>
-            ${userData?.telephone || "Téléphone"} / ${
-      userData?.email || "Email"
-    }<br/>${userData?.siteweb || " "}</p>
+          <div class="info-grid">
+            <div class="company-info">
+              <strong>${userData?.enterpriseName || "Votre Société"}</strong><br/>
+              ${userData?.commune || "Adresse"}<br/>
+              ${userData?.telephone || "Téléphone"} / ${userData?.email || "Email"}<br/>
+              ${userData?.siteweb || ""}
+            </div>
+            <div class="client-info">
+              <strong>Client: ${invoice.clientName}</strong>
+            </div>
           </div>
-
-          <div class="client-info">
-            Client : <strong>${invoice.clientName}</strong>
-          </div>
-          <div class="clearfix"></div>
-
           <table>
             <thead>
               <tr>
                 <th>Quantité</th>
                 <th>Désignation</th>
-                <th>Prix unitaire HT</th>
-                <th>Prix total HT</th>
+                <th>Prix Unitaire HT</th>
+                <th>Total HT</th>
               </tr>
             </thead>
             <tbody>
@@ -174,26 +138,23 @@ const GeneratePDF = ({ invoice }) => {
                   <td>${item.quantity}</td>
                   <td>${item.description}</td>
                   <td>${formatCurrency(item.unitPrice)} F CFA</td>
-                  <td>${formatCurrency(
-                    item.quantity * item.unitPrice
-                  )} F CFA</td>
+                  <td>${formatCurrency(item.quantity * item.unitPrice)} F CFA</td>
                 </tr>
               `
                 )
                 .join("")}
             </tbody>
           </table>
-
           <div class="totals">
-            <div><strong>Total Hors Taxe :</strong> ${formatCurrency(
-              invoice.total
-            )} F CFA</div>             
+            <strong>Total Hors Taxe: ${formatCurrency(invoice.total)} F CFA</strong>
+          </div>
+          <div class="footer">
+            Facture générée par ${userData?.enterpriseName || "Votre Société"}
           </div>
         </div>
       </body>
-    
     </html>
-  `;
+    `;
   };
 
   const handleGeneratePDF = async () => {
@@ -202,20 +163,11 @@ const GeneratePDF = ({ invoice }) => {
       return;
     }
 
-    if (invoiceCount >= 10) {
-      Alert.alert(
-        "Limite atteinte",
-        "Vous avez atteint la limite de 10 factures. Veuillez me contacter à marshallchrist@yahoo.com pour plus d'informations."
-      );
-      return;
-    }
-
     const htmlContent = generateHTMLContent(invoice);
     const { uri: tempUri } = await Print.printToFileAsync({
       html: htmlContent,
     });
 
-    // Déplace le fichier vers un répertoire plus accessible
     const fileUri =
       FileSystem.documentDirectory +
       `facture_${new Date().getTime()}_${userData?.enterpriseName}.pdf`;
@@ -226,7 +178,6 @@ const GeneratePDF = ({ invoice }) => {
         to: fileUri,
       });
 
-      // Ouvre le fichier PDF directement
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(fileUri);
       } else {
@@ -255,7 +206,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   button: {
-    backgroundColor: "#F39C12",
+    backgroundColor: "#2c3e50",
     padding: 2,
     marginVertical: 5,
     borderRadius: 5,
@@ -267,4 +218,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GeneratePDF;
+export default GeneratePDF3;

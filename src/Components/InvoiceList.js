@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,9 @@ import {
 } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import GeneratePDF from "./GeneratePDF";
+import GeneratePDF2 from "./GeneratePDF2";
+import GeneratePDF3 from "./GeneratePDF3";
+import GeneratePDF4 from "./GeneratePDF4";
 import { getAuth } from "firebase/auth";
 import { MaterialIcons } from "@expo/vector-icons";
 import rien from "../../assets/rienici.png"; // Assurez-vous que le chemin est correct
@@ -130,7 +133,12 @@ const InvoiceList = () => {
               <Text style={styles.invoiceText}>
                 {formatNumber(item.total)} F CFA
               </Text>
-              <GeneratePDF invoice={item} />
+              <View style={styles.buttonsContainer}>
+                <GeneratePDF invoice={item} />
+                <GeneratePDF2 invoice={item} />
+                <GeneratePDF3 invoice={item} />
+                <GeneratePDF4 invoice={item} />
+              </View>
             </View>
           )}
         />
@@ -176,6 +184,10 @@ const styles = StyleSheet.create({
   invoiceText: {
     fontSize: 16,
     color: colors.primary,
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    marginTop: 10,
   },
 });
 

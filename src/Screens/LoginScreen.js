@@ -53,7 +53,6 @@ const LoginScreen = () => {
       const auth = getAuth();
       await signInWithEmailAndPassword(auth, email, password);
       setLoading(false);
-      navigation.navigate("Home"); // Remplace par la page appropriée après connexion
     } catch (error) {
       setLoading(false);
       switch (error.code) {

@@ -7,16 +7,8 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
-  Alert,
 } from "react-native";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  query,
-  where,
-  getDocs,
-} from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { getAuth } from "firebase/auth";
 
@@ -78,23 +70,6 @@ const InvoiceForm = () => {
     } else {
       try {
         setSubmitting(true);
-
-        // Fetch existing invoices count for the user
-        const invoicesQuery = query(
-          collection(db, "invoices"),
-          where("userId", "==", userId)
-        );
-        const querySnapshot = await getDocs(invoicesQuery);
-        const invoiceCount = querySnapshot.size;
-
-        if (invoiceCount >= 5) {
-          setSubmitting(false);
-          Alert.alert(
-            "Limite atteinte",
-            "Vous avez atteint la limite de 5 factures. Veuillez me contacter à marshallchrist@yahoo.com."
-          );
-          return;
-        }
 
         await addDoc(collection(db, "invoices"), {
           clientName,
